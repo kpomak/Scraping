@@ -376,6 +376,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "python-dotenv"
+version = "0.21.0"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+cli = ["click (>=5.0)"]
+
+[[package]]
 name = "queuelib"
 version = "1.6.2"
 description = "Collection of persistent (disk-based) and non-persistent (memory-based) queues"
@@ -596,7 +607,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.16"
-content-hash = "ae2e03cd3402c682bd35a269c0dc5847aaf27bf2abb62b7e7c2dc41eb91f3502"
+content-hash = "8fa74ef020953d65d0dfa1eb1239b2e8845d9957a774a5799333af57a7a35085"
 
 [metadata.files]
 attrs = [
@@ -968,6 +979,10 @@ pyopenssl = [
 ]
 pypydispatcher = [
     {file = "PyPyDispatcher-2.1.2.tar.gz", hash = "sha256:b6bec5dfcff9d2535bca2b23c80eae367b1ac250a645106948d315fcfa9130f2"},
+]
+python-dotenv = [
+    {file = "python-dotenv-0.21.0.tar.gz", hash = "sha256:b77d08274639e3d34145dfa6c7008e66df0f04b7be7a75fd0d5292c191d79045"},
+    {file = "python_dotenv-0.21.0-py3-none-any.whl", hash = "sha256:1684eb44636dd462b66c3ee016599815514527ad99965de77f43e0944634a7e5"},
 ]
 queuelib = [
     {file = "queuelib-1.6.2-py2.py3-none-any.whl", hash = "sha256:4b96d48f650a814c6fb2fd11b968f9c46178b683aad96d68f930fe13a8574d19"},

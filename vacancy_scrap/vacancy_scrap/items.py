@@ -6,3 +6,8 @@ class VacancyScrapItem(scrapy.Item):
     _id = scrapy.Field()
     name = scrapy.Field()
     salary = scrapy.Field()
+    link = scrapy.Field()
+    source = scrapy.Field()
+    salary_from = scrapy.Field()
+    salary_to = scrapy.Field()
+    currency = scrapy.Field()
