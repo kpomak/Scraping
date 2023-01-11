@@ -1,6 +1,6 @@
 import scrapy
 from scrapy.http import HtmlResponse
-from vacancy_scrap import VacancyScrapItem
+from vacancy_scrap.items import VacancyScrapItem
 
 
 class HeadhunterSpider(scrapy.Spider):
