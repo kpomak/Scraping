@@ -9,5 +9,5 @@ class VacancyScrapItem(scrapy.Item):
     link = scrapy.Field()
     source = scrapy.Field()
     salary_from = scrapy.Field()
-    salary_to = scrapy.Field()
+    salary_upto = scrapy.Field()
     currency = scrapy.Field()
