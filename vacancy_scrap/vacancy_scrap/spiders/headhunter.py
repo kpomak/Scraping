@@ -16,18 +16,11 @@ class HeadhunterSpider(scrapy.Spider):
         for vacancy in vacancies:
             yield response.follow(vacancy, self.item_parse)
 
-        next_page = (
-            "https://spb.hh.ru"
-            + response.xpath("//a[@data-qa='pager-next']/@href").extract_first()
-        )
+        next_page = response.xpath("//a[@data-qa='pager-next']/@href").extract_first()
         if next_page:
-            yield response.follow(next_page, self.parse)
+            yield response.follow("https://spb.hh.ru" + next_page, self.parse)
 
     def item_parse(self, response: HtmlResponse):
         name = response.css("h1::text").extract_first()
         salary = response.css("div[data-qa='vacancy-salary']>span::text").extract()
-        yield VacancyScrapItem(
-            link=response.url,
-            name=name,
-            salary=salary
-        )
+        yield VacancyScrapItem(link=response.url, name=name, salary=salary)
