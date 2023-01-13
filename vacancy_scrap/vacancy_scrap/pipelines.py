@@ -12,8 +12,9 @@ class VacancyScrapPipeline:
         collection = self.db.vacancies
         item["_id"] = self.get_id(item["link"]) + spider.name[:2]
         item["source"] = spider.allowed_domains[0]
-        self.get_salary(item)
-        # del item["salary"]
+        if item["salary"]:
+            self.get_salary(item)
+        del item["salary"]
         collection.update_one({"_id": item["_id"]}, {"$set": item}, upsert=True)
         return item
 
@@ -22,13 +23,20 @@ class VacancyScrapPipeline:
         return id
 
     def get_salary(self, item):
-        # money = self.prettify(item["salary"])
+        salary_parser = {
+            "superjob.ru": self.sj_salary,
+            "hh.ru": self.hh_salary,
+        }
         money = item["salary"]
         length = len(money)
         if length <= 2:
             return
+        money = self.prettify(item, money)
+        salary_parser[item["source"]](item, money)
+
+    def hh_salary(self, item, money):
         item["currency"] = money[-1]
-        if length == 6:
+        if len(money) == 6:
             item["salary_from"] = money[1]
             item["salary_upto"] = money[3]
         elif "от" in money:
@@ -36,8 +44,26 @@ class VacancyScrapPipeline:
         else:
             item["salary_upto"] = money[1]
 
-    def prettify(self, money):
+    def sj_salary(self, item, money):
+        if len(money) == 5:
+            item["salary_from"] = money[0]
+            item["salary_upto"] = money[1]
+            item["currency"] = money[3]
+        elif "от" in money:
+            item["salary_from"] = money[2]
+        elif "до" in money:
+            item["salary_from"] = money[2]
+        else:
+            item["salary_upto"] = money[0]
+            item["currency"] = money[2]
+
+    def prettify(self, item, money):
         for idx, coin in enumerate(money):
             if coin[0].isdigit():
-                money[idx] = int("".join(money.split()))
+                coin_value = "".join(coin.split())
+                try:
+                    item["salary"][idx] = int(coin_value)
+                except ValueError:
+                    item["currency"] = coin_value[-1]
+                    item["salary"][idx] = int(coin_value[:-1])
         return money

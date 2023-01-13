@@ -10,7 +10,7 @@ if __name__ == "__main__":
     settings.setmodule(vacancy_settings)
 
     process = CrawlerProcess(settings)
-    # process.crawl(HeadhunterSpider)
+    process.crawl(HeadhunterSpider)
     process.crawl(SuperjobSpider)
 
     process.start()
