@@ -1,7 +1,8 @@
 import scrapy
 from scrapy.http import HtmlResponse
-from leroy_merlin.items import LeroyMerlinItem
 from scrapy.loader import ItemLoader
+
+from leroy_merlin.items import LeroyMerlinItem
 
 
 class MerlinSpider(scrapy.Spider):
@@ -11,14 +12,18 @@ class MerlinSpider(scrapy.Spider):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        search_string = kwargs.get('search')
+        search_string = kwargs.get("search")
         if search_string:
-            self.start_urls = [f"https://www.castorama.ru/novogodnie-tovary/{search_string}/"]
+            self.start_urls = [
+                f"https://www.castorama.ru/novogodnie-tovary/{search_string}/"
+            ]
         else:
             self.start_urls = ["https://www.castorama.ru/novogodnie-tovary/"]
 
     def parse(self, response: HtmlResponse):
-        links = response.xpath('//a[contains(@class, "product-card__name")]/@href').extract()
+        links = response.xpath(
+            '//a[contains(@class, "product-card__name")]/@href'
+        ).extract()
         for link in links:
             yield response.follow(link, self.parse_item)
 
@@ -26,13 +31,12 @@ class MerlinSpider(scrapy.Spider):
         if next_page:
             yield response.follow(next_page, self.parse)
 
-    def parse_ads(self, response: HtmlResponse):
-        loader = ItemLoader(item=LeroyMerlinItem(), response=response)
-        # loader.add_xpath('name', "//h1/text()")
-        # loader.add_xpath('price', "//h3//text()")
-        # loader.add_xpath('photos', "//div[@class='swiper-zoom-container']/img/@src | //div[@class='swiper-zoom-container']/img/@data-src")
-        loader.add_value('url', response.url)
-        yield loader.load_item()
-
     def parse_item(self, response: HtmlResponse):
-        pass
+        loader = ItemLoader(item=LeroyMerlinItem(), response=response)
+        loader.add_xpath("name", "//h1/text()")
+        loader.add_xpath(
+            "price", '//span[@class="regular-price"]/span/span/span[1]/text()'
+        )
+        loader.add_xpath("photos", '//img[contains(@class, "thumb-slide__img")]/@src')
+        loader.add_value("url", response.url)
+        yield loader.load_item()
