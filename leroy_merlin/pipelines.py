@@ -1,18 +1,25 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
 import hashlib
 
 import scrapy
-# useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
+from pymongo import MongoClient
 from scrapy.pipelines.images import ImagesPipeline
 
 
 class ParseLeroyMerlinPipeline:
+    def __init__(self) -> None:
+        client = MongoClient("mongodb://root:pass@localhost:27017")
+        self.db = client.castorama
+
+    def get_params(self, item):
+        item["params"] = dict(zip(item["param_label"], item["param_value"]))
+
     def process_item(self, item, spider):
+        collection = self.db.ligts
+        if item["param_label"]:
+            self.get_params(item)
+        del item["param_label"]
+        del item["param_value"]
+        collection.update_one({"_id": item["_id"]}, {"$set": item}, upsert=True)
         return item
 
 

@@ -8,25 +8,22 @@ def process_price(value):
     return int("".join(value.split(" ")))
 
 
-def process_name(value):
+def process_striptease(value):
     if not value:
         return
     return value.strip()
 
 
-def process_specs(value):
-    print(value, "!!!!!!")
-    return value
-
-
 class LeroyMerlinItem(scrapy.Item):
-    # define the fields for your item here like:
+    _id = scrapy.Field(output_processor=TakeFirst())
     name = scrapy.Field(
-        input_processor=MapCompose(process_name), output_processor=Join()
+        input_processor=MapCompose(process_striptease), output_processor=Join()
     )
     price = scrapy.Field(
         input_processor=MapCompose(process_price), output_processor=TakeFirst()
     )
     photos = scrapy.Field()
     url = scrapy.Field(output_processor=TakeFirst())
-    # params = scrapy.Field(input_processor=MapCompose(process_specs), output_processor=Join())
+    params = scrapy.Field()
+    param_label = scrapy.Field(input_processor=MapCompose(process_striptease))
+    param_value = scrapy.Field(input_processor=MapCompose(process_striptease))

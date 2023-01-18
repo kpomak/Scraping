@@ -33,6 +33,7 @@ class MerlinSpider(scrapy.Spider):
 
     def parse_item(self, response: HtmlResponse):
         loader = ItemLoader(item=LeroyMerlinItem(), response=response)
+        loader.add_xpath("_id", '//div[@class="product-essential__sku"]/span/text()')
         loader.add_xpath("name", "//h1/text()")
         loader.add_xpath(
             "price", '//span[@class="regular-price"]/span/span/span[1]/text()'
@@ -41,4 +42,6 @@ class MerlinSpider(scrapy.Spider):
             "photos", '//img[contains(@class, "top-slide__img")]/@data-src'
         )
         loader.add_value("url", response.url)
+        loader.add_xpath("param_label", "//dt/span/text()")
+        loader.add_xpath("param_value", "//dd/text()")
         yield loader.load_item()
