@@ -37,6 +37,8 @@ class MerlinSpider(scrapy.Spider):
         loader.add_xpath(
             "price", '//span[@class="regular-price"]/span/span/span[1]/text()'
         )
-        loader.add_xpath("photos", '//img[contains(@class, "thumb-slide__img")]/@src')
+        loader.add_xpath(
+            "photos", '//img[contains(@class, "top-slide__img")]/@data-src'
+        )
         loader.add_value("url", response.url)
         yield loader.load_item()
