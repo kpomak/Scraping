@@ -9,7 +9,14 @@ def process_price(value):
 
 
 def process_name(value):
+    if not value:
+        return
     return value.strip()
+
+
+def process_specs(value):
+    print(value, "!!!!!!")
+    return value
 
 
 class LeroyMerlinItem(scrapy.Item):
@@ -22,3 +29,4 @@ class LeroyMerlinItem(scrapy.Item):
     )
     photos = scrapy.Field()
     url = scrapy.Field(output_processor=TakeFirst())
+    # params = scrapy.Field(input_processor=MapCompose(process_specs), output_processor=Join())
