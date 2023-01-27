@@ -1,14 +1,23 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
-
-# useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
+import scrapy
+from scrapy.pipelines.images import ImagesPipeline
 
 
 class InstaPipeline:
     def process_item(self, item, spider):
         print(item)
+        return item
+
+
+class PhotosPipeline(ImagesPipeline):
+    def get_media_requests(self, item, info):
+        avatar_url = item.get("avatar")
+        if avatar_url:
+            try:
+                yield scrapy.Request(avatar_url)
+            except Exception as error:
+                print(error)
+
+    def item_completed(self, results, item, info):
+        if results:
+            item["avatar"] = [result["path"] for ok, result in results if ok].pop()
         return item

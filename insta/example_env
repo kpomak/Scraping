@@ -1,0 +1,4 @@
+LOGIN='login'
+PASSWORD='password_hash'
+USERS_LIST='["username1", "username2"]'
+MONGODB_URI='mongodb://localhost:27017/'

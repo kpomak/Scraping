@@ -13,12 +13,16 @@ class InstagramSpider(scrapy.Spider):
     allowed_domains = ["instagram.com"]
     start_urls = ["https://www.instagram.com/"]
     login_url = "https://www.instagram.com/api/v1/web/accounts/login/ajax/"
+    account_url = "https://www.instagram.com/api/v1/users/web_profile_info/?username="
     login = settings.LOGIN
     password = settings.PASSWORD
     accounts = settings.USERS_LIST
     api_url = "https://www.instagram.com/api/v1/friendships/"
 
     def parse(self, response: HtmlResponse):
+        """
+        func requests main page and sends login form to authenticate spider
+        """
         token = self.get_csrf(response.text)
         yield scrapy.FormRequest(
             self.login_url,
@@ -30,22 +34,30 @@ class InstagramSpider(scrapy.Spider):
             formdata={
                 "enc_password": self.password,
                 "username": self.login,
-                "queryParams": {},
+                "queryParams": "{}",
                 "optIntoOneTap": "false",
-                "trustedDeviceRecords": {},
+                "trustedDeviceRecords": "{}",
             },
         )
 
     def parse_accounts(self, response: HtmlResponse):
+        """
+        func requests account info of users in USERS_LIST
+        """
         login_confirm = response.json()
         if login_confirm.get("authenticated"):
             # id = login_confirm.get("userId")
             for user in self.accounts:
                 yield response.follow(
-                    f"/{user}/", callback=self.parse_user, cb_kwargs={"username": user}
+                    f"{self.account_url}{user}",
+                    callback=self.parse_user,
+                    cb_kwargs={"username": user},
                 )
 
     def parse_user(self, response: HtmlResponse, username):
+        """
+        func requests followers and following urls
+        """
         id = self.get_user_id(response.text)
 
         followers_url = (
@@ -72,6 +84,9 @@ class InstagramSpider(scrapy.Spider):
         )
 
     def followers(self, response: HtmlResponse, username, id):
+        """
+        func scraps followers data
+        """
         parsed_data = response.json()
         next = parsed_data.get("next_max_id")
         if next:
@@ -95,6 +110,9 @@ class InstagramSpider(scrapy.Spider):
             )
 
     def following(self, response: HtmlResponse, username, id):
+        """
+        func parses following data
+        """
         parsed_data = response.json()
         next = parsed_data.get("next_max_id")
         if next:
@@ -118,11 +136,15 @@ class InstagramSpider(scrapy.Spider):
             )
 
     def get_user_id(self, text):
-
-        one = re.search(r'("id":")(\d+)(","profile_picurl"', text).group()
-        two = re.search('"id":")(\d+)(","profile_pic_url"', text).group()
-        return re.search('"id":")(\d+)(","profile_pic_url"', text).group(2)
+        """
+        func returns users id from response of profile-url request
+        """
+        id = re.search(r'("id":")(\d+)(","profile_pic_url)', text).group(2)
+        return id
 
     def get_csrf(self, text):
+        """
+        func returns csrf-token from response of main page request
+        """
         token = re.search('csrf_token\\\\":\\\\"\w+', text).group()
         return token.split('"').pop()

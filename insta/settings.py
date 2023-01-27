@@ -15,13 +15,15 @@ NEWSPIDER_MODULE = "insta.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0"
+USER_AGENT = "Instagram 155.0.0.37.107"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
 LOG_ENABLE = True
 LOG_LEVEL = "DEBUG"
+
+IMAGE_STORE = "profile_photos"
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 CONCURRENT_REQUESTS = 8
@@ -68,6 +70,7 @@ COOKIES_ENABLED = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "insta.pipelines.InstaPipeline": 300,
+    "insta.pipelines.PhotosPipeline": 200,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
